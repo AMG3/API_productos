@@ -1,5 +1,6 @@
 import express from "express";
 import { Router } from "express";
+import { Products } from "./Products.js";
 
 const app = express();
 const router = Router();
@@ -17,15 +18,15 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = 8080;
-const products = [];
+const products = new Products();
 
 router.get("/", (req, res) => {
-  res.json(products);
+  res.json(products.getAll());
 });
 
 router.get("/:id", (req, res) => {
   const id = +req.params.id;
-  const product = products.find((p) => p.id === id);
+  const product = products.getById(id);
 
   if (product) {
     res.json(product);
@@ -37,31 +38,28 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const product = req.body;
   let newId = 0;
+  const allProducts = products.getAll();
 
-  if (products.length > 0) {
-    newId = products[products.length - 1].id + 1;
+  if (allProducts.length > 0) {
+    newId = allProducts[allProducts.length - 1].id + 1;
   }
 
   const newProduct = { id: newId, ...product };
-  products.push(newProduct);
+  products.addProduct(newProduct);
   res.json(newProduct);
 });
 
 router.put("/:id", (req, res) => {
   const product = req.body;
   const id = +req.params.id;
-  const productFound = products.find((product) => product.id === id);
-  productFound.name = product.name;
-  productFound.price = product.price;
-  productFound.thumbnail = product.thumbnail;
+  const productFound = products.updateProduct(product, id);
 
   res.json({ product: productFound });
 });
 
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
-  const index = products.findIndex((product) => product.id === id);
-  products.splice(index, 1);
+  products.deleteProduct(id);
 
   res.json({ message: "Producto eliminado" });
 });
