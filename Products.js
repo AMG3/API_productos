@@ -16,7 +16,7 @@ export class Products {
 
   updateProduct(product, id) {
     const productFound = this.products.find((product) => product.id === id);
-    productFound.name = product.name;
+    productFound.title = product.title;
     productFound.price = product.price;
     productFound.thumbnail = product.thumbnail;
 
